@@ -4,6 +4,11 @@ const interiorColorSection = document.querySelector('#interior-buttons');
 const exteriorImage = document.querySelector('#exterior-image');
 const interiorImage = document.querySelector('#interior-image');
 const wheelButtonsSection = document.querySelector('#wheel-buttons');
+const performanceBtn = document.querySelector('#performance-btn');
+const totalPriceElement = document.querySelector('#total-price');
+
+const basePrice = 52490;
+let currentPrice = basePrice;
 
 
 let selectedColor = 'Stealth Gray';
@@ -12,6 +17,36 @@ const selectedOptions = {
     'Performance Package': false,
     'Full Self-Driving': false,
 };
+
+
+const pricing = {
+    'Performance Wheels': 2500,
+    'Performance Package': 5000,
+    'Full Self-Driving': 8500,
+    'Accessories': {
+        'Center Console Trays': 35,
+        'Sunshade': 105,
+        'All-Weather Interior Liners': 225,
+    }
+}
+
+
+// Update total Price in the UI
+const updateTotalPrice = () => {
+    //Reset the current price to base price
+    currentPrice = basePrice;
+
+    if (selectedOptions['Performance Wheels']) {
+        currentPrice += pricing['Performance Wheels'];
+    }
+
+    if (selectedOptions['Performance Package']) {
+        currentPrice += pricing['Performance Package'];
+    }
+
+    //Update the total price in UI
+    totalPriceElement.textContent = `$${currentPrice.toLocaleString()}`;
+}
 
 // Handle Top Bar On Scroll
 
@@ -90,13 +125,28 @@ const handleWheelButtonClick = (event) => {
 
         updateExteriorImage();
 
+        updateTotalPrice();
         exteriorImage.src = selectedWheel ? './images/model-y-stealth-grey-performance.jpg': './images/model-y-stealth-grey.jpg'
     }
 };
 
+
+//Performance Package Selection
+
+const handlePerformanceButtonClick = () =>{
+    const isSelected = performanceBtn.classList.toggle('bg-gray-700');
+    performanceBtn.classList.toggle('text-white');
+    
+
+    //Update selected options
+    selectedOptions['Performance Package'] = isSelected;
+
+    updateTotalPrice();
+};
 
 // Event Listeners
 window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
 exteriorColorSection.addEventListener('click', handleColorButtonClick);
 interiorColorSection.addEventListener('click', handleColorButtonClick);
 wheelButtonsSection.addEventListener('click', handleWheelButtonClick);
+performanceBtn.addEventListener('click', handlePerformanceButtonClick);
