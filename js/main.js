@@ -6,6 +6,7 @@ const interiorImage = document.querySelector('#interior-image');
 const wheelButtonsSection = document.querySelector('#wheel-buttons');
 const performanceBtn = document.querySelector('#performance-btn');
 const totalPriceElement = document.querySelector('#total-price');
+const fullSelfDrivingCheckbox = document.querySelector('#full-self-driving-checkbox');
 
 const basePrice = 52490;
 let currentPrice = basePrice;
@@ -36,12 +37,19 @@ const updateTotalPrice = () => {
     //Reset the current price to base price
     currentPrice = basePrice;
 
+    //Performance Wheel Option
     if (selectedOptions['Performance Wheels']) {
         currentPrice += pricing['Performance Wheels'];
     }
 
+    // Performance Package Option
     if (selectedOptions['Performance Package']) {
         currentPrice += pricing['Performance Package'];
+    }
+
+    // Full Self Driving Option
+    if (selectedOptions['Full Self-Driving']) {
+        currentPrice += pricing['Full Self-Driving'];
     }
 
     //Update the total price in UI
@@ -144,9 +152,18 @@ const handlePerformanceButtonClick = () =>{
     updateTotalPrice();
 };
 
+
+// Full Self Driving Selection
+const fullSelfDrivingChange = () => {
+    const isSelected = fullSelfDrivingCheckbox.checked;
+    selectedOptions['Full Self-Driving'] = isSelected;
+    updateTotalPrice();
+}
+
 // Event Listeners
 window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
 exteriorColorSection.addEventListener('click', handleColorButtonClick);
 interiorColorSection.addEventListener('click', handleColorButtonClick);
 wheelButtonsSection.addEventListener('click', handleWheelButtonClick);
 performanceBtn.addEventListener('click', handlePerformanceButtonClick);
+fullSelfDrivingCheckbox.addEventListener('change', fullSelfDrivingChange);
