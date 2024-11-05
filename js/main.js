@@ -7,6 +7,10 @@ const wheelButtonsSection = document.querySelector('#wheel-buttons');
 const performanceBtn = document.querySelector('#performance-btn');
 const totalPriceElement = document.querySelector('#total-price');
 const fullSelfDrivingCheckbox = document.querySelector('#full-self-driving-checkbox');
+const accessoryCheckboxes = document.querySelectorAll('.accessory-form-checkbox'); 
+const downPaymentElement = document.querySelector('#down-payment');
+const monthlyPaymentElement = document.querySelector('#monthly-payment');
+
 
 const basePrice = 52490;
 let currentPrice = basePrice;
@@ -52,8 +56,49 @@ const updateTotalPrice = () => {
         currentPrice += pricing['Full Self-Driving'];
     }
 
+    //Accessory Checkboxes
+    accessoryCheckboxes.forEach((checkbox) => {
+        // Extract the accessory label
+        const accessoryLabel = checkbox
+        .closest('label')
+        .querySelector('span')
+        .textContent.trim();
+
+        const accessoryprice = pricing['Accessories'][accessoryLabel];
+
+        //Add to current price if accessory is selected
+        if (checkbox.checked) {
+            currentPrice += accessoryprice;
+        }
+    });
+
     //Update the total price in UI
     totalPriceElement.textContent = `$${currentPrice.toLocaleString()}`;
+
+    updatePaymentBreakdown();
+};
+
+//update payment breakdown based on current price
+
+const updatePaymentBreakdown = () => {
+    // Calculate down payment
+    const downPayment = currentPrice * 0.1;
+    downPaymentElement.textContent = `$${downPayment.toLocaleString()}`;
+
+    // Calculate loan details (assuming 60-month loan and 3% interest rate)
+    const loanTermMonths = 60;
+    const interestRate = 0.03;
+
+    const loanAmount = currentPrice - downPayment;
+
+    // Monthly payment formula: p * (r(1+r)^n) / ((1+r)^n-1)
+    const monthlyInterestRate = interestRate / 12;
+
+    const monthlyPayment = (loanAmount * (monthlyInterestRate * Math.pow(1 +
+    monthlyInterestRate, loanTermMonths))) / (Math.pow(1 + monthlyInterestRate,
+    loanTermMonths) - 1);
+
+    monthlyPaymentElement.textContent = `$${monthlyPayment.toFixed(2).toLocaleString()}`;
 }
 
 // Handle Top Bar On Scroll
@@ -155,10 +200,19 @@ const handlePerformanceButtonClick = () =>{
 
 // Full Self Driving Selection
 const fullSelfDrivingChange = () => {
-    const isSelected = fullSelfDrivingCheckbox.checked;
-    selectedOptions['Full Self-Driving'] = isSelected;
+    selectedOptions['Full Self-Driving'] = fullSelfDrivingCheckbox.checked;
     updateTotalPrice();
-}
+};
+
+
+// Handle Accessory Checkbox Listeners
+accessoryCheckboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => updateTotalPrice());
+});
+
+
+//initial Update Total Price
+updateTotalPrice();
 
 // Event Listeners
 window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
